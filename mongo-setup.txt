@@ -1,0 +1,12 @@
+
+use mainstay
+
+db.createUser(
+  {
+    user: "mainstay",
+    pwd: "mst_password",
+    roles: [
+       { role: "readWrite", db: "mainstay" }
+    ]
+  }
+)

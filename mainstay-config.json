@@ -1,0 +1,41 @@
+{
+    "staychain":
+    {
+        "initTx": "MAINSTAY_INIT_TX",
+        "initScript": "MAINSTAY_INIT_SCRIPT",
+        "initChaincodes": "MAINSTAY_INIT_CHAINCODES",
+        "topupAddress": "MAINSTAY_TOPUP_ADDRESS",
+        "topupScript": "MAINSTAY_TOPUP_SCRIPT"
+    },
+    "main":
+    {
+        "rpcurl": "MAINSTAY_MAIN_URL",
+        "rpcuser": "MAINSTAY_MAIN_USER",
+        "rpcpass": "MAINSTAY_MAIN_PASS",
+        "chain": "MAINSTAY_MAIN_CHAIN"
+    },
+    "signer":
+    {
+        "publisher": "MAINSTAY_SIGNER_PUBLISHER",
+        "signers": "MAINSTAY_SIGNER_SIGNERS"
+    },
+    "db":
+    {
+        "user": "mainstay",
+        "password": "mst_password",
+        "host": "127.0.0.1",
+        "port": "27017",
+        "name": "mainstay"
+    },
+    "fees":
+    {
+        "minFee": "MAINSTAY_FEES_MIN",
+        "maxFee": "MAINSTAY_FEES_MAX",
+        "feeIncrement": "MAINSTAY_FEES_INCREMENT"
+    },
+    "timing":
+    {
+        "newAttestationMinutes": "MAINSTAY_NEW_ATTESTATION_MINUTES",
+        "handleUnconfirmedMinutes": "MAINSTAY_HANDLE_UNCONFIRMED_MINUTES"
+    }
+}

@@ -1,0 +1,4 @@
+
+CREATE USER mercury PASSWORD 'mrc_password';
+CREATE DATABASE mercury;
+GRANT ALL PRIVILEGES ON DATABASE mercury TO mercury;
