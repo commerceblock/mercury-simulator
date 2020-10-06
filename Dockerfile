@@ -22,15 +22,18 @@ RUN set -ex \
     && python3 get-pip.py \
     && pip3 install pytest \
     && pip3 install requests \
+    && pip3 install python-bitcoinrpc \
     && rm -rf /var/lib/apt/lists/* \
-    && adduser --system --group --home /srv/bitcoin bitcoin \
-    && adduser --system --group --home /srv/electrs electrs \
-    && adduser --system --group --home /srv/mercury mercury \
-    && adduser --system --group --home /srv/mongo mongo \
-    && adduser --system --group --home /srv/mainstay mainstay \
-    && adduser --system --group --home /srv/tests tester \
+    && adduser --disabled-password --system --group --home /srv/bitcoin bitcoin \
+    && adduser --disabled-password --system --group --home /srv/electrs electrs \
+    && adduser --disabled-password --system --group --home /srv/mercury mercury \
+    && adduser --disabled-password --system --group --home /srv/mongo mongo \
+    && adduser --disabled-password --system --group --home /srv/mainstay mainstay \
+    && adduser --disabled-password --system --group --home /srv/tests tester \
     && mkdir /var/log/daemons \
-    && ln -s /srv/mainstay/src /src
+    && ln -s /srv/mainstay/src /src \
+    && alias btc="bitcoin-cli -rpccookiefile=/srv/bitcoin/.bitcoin/regtest/.cookie" 
+
 
 
 COPY --from=commerceblock/mercury:latest /usr/local/bin/mercury /usr/local/bin/

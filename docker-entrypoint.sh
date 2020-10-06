@@ -3,10 +3,12 @@
 if [ "$1" = "tests" ]; then
 
   # postgresql
+  echo "postgresql"  
   /etc/init.d/postgresql start
   su postgres -s /bin/bash -c "psql -f /etc/postgres-setup.txt"
 
   # bitcoind
+  echo "bitcoind"  
   cd /srv/bitcoin
   touch /var/log/daemons/bitcoind.log
   chmod a+rw /var/log/daemons/bitcoind.log
@@ -19,6 +21,7 @@ if [ "$1" = "tests" ]; then
   setfacl -d -m u:electrs:rx /srv/bitcoin/.bitcoin/regtest/blocks
 
   # mining
+  echo "mining"  
   touch /var/log/daemons/bitcoin-mining.log
   chmod a+rw /var/log/daemons/bitcoin-mining.log
   (
@@ -30,12 +33,14 @@ if [ "$1" = "tests" ]; then
   ) &
 
   # electrs connects to bitcoind
+  echo "electrs"  
   cd /srv/electrs
   touch /var/log/daemons/electrs.log
   chmod a+rw /var/log/daemons/electrs.log
   su electrs -s /bin/bash -c "electrs --verbose --timestamp --network regtest --daemon-rpc-addr 127.0.0.1:8332 --daemon-dir /srv/bitcoin/.bitcoin &>>/var/log/daemons/electrs.log &"
 
   # mongo
+  echo "mongo"  
   cd /srv/mongo
   touch /var/log/daemons/mongo.log
   chmod a+rw /var/log/daemons/mongo.log
@@ -44,12 +49,14 @@ if [ "$1" = "tests" ]; then
   su mongo -s /bin/bash -c "cat /etc/mongo-setup.txt | mongo"
 
   # mainstay connects to mongo
+  echo "mainstay"  
   cd /srv/mainstay
   touch /var/log/daemons/mainstay.log
   chmod a+rw /var/log/daemons/mainstay.log
   su mainstay -s /bin/bash -c "mainstay /srv/bitcoin/.bitcoin &>>/var/log/daemons/mainstay.log &"
 
   # mercury connects to postgresql
+  echo "mercury"  
   export MERC_DB_HOST_R=127.0.0.1
   export MERC_DB_PORT_R=5432
   export MERC_DB_USER_R=mercury
@@ -61,10 +68,13 @@ if [ "$1" = "tests" ]; then
   export MERC_DB_PASS_W=mrc_password
   export MERC_DB_DATABASE_W=mercury
   cd /srv/mercury
+  echo "starting mercury"  
   su mercury -s /bin/bash -c "mercury &"
+  echo "finished starting mercury"
   
   cd /srv/tests
   shift
+  set -m
   exec su tester -s /bin/bash -c "$*"
 elif [ "$1" = "/bin/bash" ]; then
   shift
