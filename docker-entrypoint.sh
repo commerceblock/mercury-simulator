@@ -1,5 +1,5 @@
 #!/bin/sh
-
+export BTC_DATADIR=/srv/bitcoin/.bitcoin
 if [ "$1" = "tests" ]; then
 
   # postgresql
@@ -8,12 +8,12 @@ if [ "$1" = "tests" ]; then
   su postgres -s /bin/bash -c "psql -f /etc/postgres-setup.txt"
 
   # bitcoind
-  echo "bitcoind"  
+  echo "bitcoind"
   cd /srv/bitcoin
   touch /var/log/daemons/bitcoind.log
   chmod a+rw /var/log/daemons/bitcoind.log
   # commerceblock/bitcoin is at /usr/local/bin/bitcoind, official bitcoind is at /usr/bin/bitcoind
-  su bitcoin -s /bin/bash -c "/usr/local/bin/bitcoind -printtoconsole -rpcallowip=0.0.0.0/0 -rpcport=8332 -server=1 -txindex=1 -prune=0 -regtest=1 -daemon=1"
+  su bitcoin -s /bin/bash -c "/usr/local/bin/bitcoind -datadir=${BTC_DATADIR} -printtoconsole"
   sleep 4 # wait fot the cookie file to be created
   chmod a+r /srv/bitcoin/.bitcoin/regtest/.cookie
   setfacl -m u:electrs:rx /srv/bitcoin/.bitcoin/regtest/blocks
@@ -25,9 +25,11 @@ if [ "$1" = "tests" ]; then
   touch /var/log/daemons/bitcoin-mining.log
   chmod a+rw /var/log/daemons/bitcoin-mining.log
   (
-  BTC_ADDRESS=$(su bitcoin -s /bin/bash -c 'bitcoin-cli -rpccookiefile=/srv/bitcoin/.bitcoin/regtest/.cookie getnewaddress')
+  echo "BTC_DATADIR:" $BTC_DATADIR
+  export BTC_ADDRESS=$(su bitcoin -s /bin/bash -c '/usr/local/bin/bitcoin-cli -datadir=${BTC_DATADIR} getnewaddress')
+  echo "BTC_ADDRESS:" $BTC_ADDRESS
   while true; do
-   su bitcoin -s /bin/bash -c "bitcoin-cli -rpccookiefile=/srv/bitcoin/.bitcoin/regtest/.cookie generatetoaddress 1 ${BTC_ADDRESS} &>>/var/log/daemons/bitcoin-mining.log"
+   su bitcoin -s /bin/bash -c "/usr/local/bin/bitcoin-cli -datadir=${BTC_DATADIR} generatetoaddress 1 ${BTC_ADDRESS} &>>/var/log/daemons/bitcoin-mining.log"
    sleep 600
   done
   ) &
@@ -37,6 +39,7 @@ if [ "$1" = "tests" ]; then
   cd /srv/electrs
   touch /var/log/daemons/electrs.log
   chmod a+rw /var/log/daemons/electrs.log
+
   su electrs -s /bin/bash -c "electrs --verbose --timestamp --network regtest --daemon-rpc-addr 127.0.0.1:8332 --daemon-dir /srv/bitcoin/.bitcoin &>>/var/log/daemons/electrs.log &"
 
   # mongo
@@ -54,7 +57,11 @@ if [ "$1" = "tests" ]; then
   touch /var/log/daemons/mainstay.log
   chmod a+rw /var/log/daemons/mainstay.log
   su mainstay -s /bin/bash -c "mainstay /srv/bitcoin/.bitcoin &>>/var/log/daemons/mainstay.log &"
+  # set up a mainstay slot for mercury
+  
 
+
+  
   # mercury connects to postgresql
   echo "mercury"  
   export MERC_DB_HOST_R=127.0.0.1

@@ -3,7 +3,7 @@ FROM debian:stable-slim
 
 RUN set -ex \
     && apt-get update \
-    && apt-get install -y libssl-dev apt-transport-https ca-certificates gpg \
+    && apt-get install -y libssl-dev apt-transport-https ca-certificates gpg emacs libssl-dev libcurlpp \
     && update-ca-certificates \
     && gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 3D9E81D3CA76CDCBE768C4B4DC6B4F8E60B8CF4C \
     && gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys BC528686B50D79E339D3721CEB3E94ADBE1229CF \
@@ -23,6 +23,7 @@ RUN set -ex \
     && pip3 install pytest \
     && pip3 install requests \
     && pip3 install python-bitcoinrpc \
+    && pip3 install python-bitcoinlib \
     && rm -rf /var/lib/apt/lists/* \
     && adduser --disabled-password --system --group --home /srv/bitcoin bitcoin \
     && adduser --disabled-password --system --group --home /srv/electrs electrs \
@@ -32,8 +33,8 @@ RUN set -ex \
     && adduser --disabled-password --system --group --home /srv/tests tester \
     && mkdir /var/log/daemons \
     && ln -s /srv/mainstay/src /src \
-    && alias btc="bitcoin-cli -rpccookiefile=/srv/bitcoin/.bitcoin/regtest/.cookie" 
-
+    && mkdir /srv/bitcoin/.bitcoin \
+    && chown bitcoin -R /srv/bitcoin/.bitcoin
 
 
 COPY --from=commerceblock/mercury:latest /usr/local/bin/mercury /usr/local/bin/
@@ -49,6 +50,7 @@ COPY ./mainstay-config.json /srv/mainstay/src/mainstay/config/conf.json
 COPY ./postgres-setup.txt /etc/postgres-setup.txt
 COPY ./mongo-setup.txt /etc/mongo-setup.txt
 COPY ./tests/* /srv/tests/
+COPY ./config/bitcoin.conf /srv/bitcoin/.bitcoin/bitcoin.conf
 COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 
 
