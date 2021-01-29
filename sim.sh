@@ -2,9 +2,10 @@
 
 if [ -z "$1" ]; then
       echo "Please use one of the following:"
-      echo "initialize - run once, first step"
+      echo "init - initialize stack, create required dirs"
+      echo "update - update docker images"
       echo "start - start stack to create or update services"
-      echo "stop - stop stack and services"
+      echo "stop - stop stack and services, requires init again"
       echo "stopService - remove idividual service"
       echo "stackStatus - check status of the stack"
       echo "status - check status of running containers"
@@ -16,6 +17,17 @@ function initialize(){
     docker swarm init
     echo "Creating required dirs"
     mkdir -p data/{bitcoin,mercurydb}
+    echo "Downloading required docker images"
+    docker pull timescale/timescaledb:latest-pg12
+    docker pull commerceblock/mercury:latest
+    docker pull paulius6/bitcoin:0.20.0
+}
+
+function updateDockerImages(){
+    echo "Updating docker images"
+    docker pull timescale/timescaledb:latest-pg12
+    docker pull commerceblock/mercury:latest
+    docker pull paulius6/bitcoin:0.20.0
 }
 
 function startStack(){
@@ -58,7 +70,7 @@ function containerStatus(){
 function mercuryStatus(){
     echo "Pinging mercury API"
     echo "---"
-    curl -v4 http://0.0.0.0:8000/ping
+    curl -v4 http://0.0.0.0:18000/ping
     echo ""
     echo "You should see: |HTTP/1.1 200 OK| in the above response"
 }
@@ -69,6 +81,9 @@ case "$1" in
             ;;
         start)
             startStack
+            ;;
+        update)
+            updateDockerImages
             ;;
         stop)
             stackRemove
