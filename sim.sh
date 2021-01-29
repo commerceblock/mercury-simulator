@@ -8,6 +8,7 @@ if [ -z "$1" ]; then
       echo "stop - stop stack and services, requires init again"
       echo "stopService - remove idividual service"
       echo "stackStatus - check status of the stack"
+      echo "stackPs - check process list of the stack"
       echo "status - check status of running containers"
       echo "ping - ping mercury server API"
 fi
@@ -61,6 +62,12 @@ function stackStatus(){
     docker service ls
 }
 
+function stackProcessList(){
+    echo "Stack process list:"
+    echo "---"
+    docker stack ps sim
+}
+
 function containerStatus(){
     echo "Container status:"
     echo "---"
@@ -93,6 +100,9 @@ case "$1" in
             ;;
         stackStatus)
             stackStatus
+            ;;
+        stackPs)
+            stackProcessList
             ;;
         status)
             containerStatus
