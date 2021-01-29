@@ -1,0 +1,73 @@
+version: "3.8"
+services:
+  mercurydb:
+    image: timescale/timescaledb:latest-pg12
+    networks:
+      - default
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    environment:
+      POSTGRES_PASSWORD: "password"
+      TIMESCALEDB_TELEMETRY: "off"
+    volumes:
+      - ./data/mercurydb:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  mercury:
+    image: commerceblock/mercury:latest
+    environment:
+      - MERC_DB_USER_W=postgres
+      - MERC_DB_PASS_W=password
+      - MERC_DB_HOST_W=sim_mercurydb
+      - MERC_DB_PORT_W=5432
+      - MERC_DB_DATABASE_W=postgres
+      - MERC_DB_USER_R=postgres
+      - MERC_DB_PASS_R=password
+      - MERC_DB_HOST_R=sim_mercurydb
+      - MERC_DB_PORT_R=5432
+      - MERC_DB_DATABASE_R=postgres
+      - MERC_NETWORK=testnet
+      - MERC_BLOCK_TIME=2
+      - RUST_LOG=debug
+    networks:
+      - default
+    ports:
+      - "8000:8000"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    command: server
+
+  bitcoin:
+    image: paulius6/bitcoin:0.20.0
+    networks:
+      - default
+    volumes:
+      - ./data/bitcoin:/home/bitcoin/.bitcoin
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    command: >-
+      bitcoind
+        -printtoconsole
+        -rpcuser=${BITCOIN_RPC_USER:-username}
+        -rpcpassword=${BITCOIN_RPC_PASSWORD:-password}
+        -rpcallowip=10.6.6.0/24
+        -rpcbind=0.0.0.0
+        -rpcport=8332
+        -server=1
+        -txindex=1
+        -prune=0
+        -regtest=1
+
+networks:
+  default:
+    driver: overlay
+    ipam:
+      config:
+      - subnet: 10.6.6.0/24

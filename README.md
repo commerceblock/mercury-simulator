@@ -1,31 +1,18 @@
 # mercury-tests
 Integration tests for mercury
 
-## Building and running
+## Usage
 
-First, build the docker image:
+```bash
+./sim.sh 
 
-`docker build -t mercury-tests .`
+init - run once, first step to prepare stack
+start - start stack to create or update services
+stop - stop stack and services
+stopService - remove idividual service
+stackStatus - check status of the stack
+status - check status of running containers
+ping - ping mercury server API
+```
 
-Then run the test suite:
-
-`docker run --rm -it mercury-tests tests pytest -v suite.py`
-
-## Debugging:
-
-* For bash shell with daemons running, use:
-
-`docker run --rm -it mercury-tests tests /bin/bash`
-
-* You can also execute any other command, as user 'tester':
-
-`docker run --rm -it mercury-tests tests echo "my command"`
-
-* For pure bash shell as root, use:
-
-`docker run --rm -it mercury-tests /bin/bash`
-
-## Logging
-
-Daemon logs are saved to `/var/log/daemons/`. Mount that directory as a volume if you want the logs to persist.
 
