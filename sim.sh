@@ -11,6 +11,7 @@ if [ -z "$1" ]; then
       echo "stackPs - check process list of the stack"
       echo "status - check status of running containers"
       echo "ping - ping mercury server API"
+      echo "pingLockbox - ping lockbox server API"
 fi
 
 function initialize(){
@@ -22,6 +23,7 @@ function initialize(){
     docker pull timescale/timescaledb:latest-pg12
     docker pull commerceblock/mercury:latest
     docker pull paulius6/bitcoin:0.20.0
+    docker pull commerceblock/lockbox:tests
 }
 
 function updateDockerImages(){
@@ -29,6 +31,7 @@ function updateDockerImages(){
     docker pull timescale/timescaledb:latest-pg12
     docker pull commerceblock/mercury:latest
     docker pull paulius6/bitcoin:0.20.0
+    docker pull commerceblock/lockbox:tests
 }
 
 function startStack(){
@@ -82,6 +85,14 @@ function mercuryStatus(){
     echo "You should see: |HTTP/1.1 200 OK| in the above response"
 }
 
+function lockboxStatus(){
+    echo "Pinging lockbox API"
+    echo "---"
+    curl -v4 http://0.0.0.0:19000/ping
+    echo ""
+    echo "You should see: |HTTP/1.1 200 OK| in the above response"
+}
+
 case "$1" in
         init)
             initialize
@@ -109,6 +120,9 @@ case "$1" in
             ;;
         ping)
             mercuryStatus
+            ;;
+        pingLockbox)
+            lockboxStatus
             ;;
         *)
             "$@"

@@ -16,6 +16,25 @@ services:
     ports:
       - "15432:5432"
 
+  lockbox:
+    image: commerceblock/lockbox:tests
+    networks:
+      - default
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "19000:8000"
+    environment:
+      SGX_MODE: SW
+      SGX_SDK: /opt/intel/sgxsdk
+      LD_LIBRARY_PATH: /opt/intel/sgxsdk/sdk_libs
+      LOCKBOX_DB_PATH: /tmp/lockbox
+    command: >
+      bash -c "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/intel/sgx-aesm-service/aesm/ /opt/intel/sgx-aesm-service/aesm/aesm_service;
+                /opt/lockbox/bin/server_exec"
+
   mercury:
     image: commerceblock/mercury:latest
     environment:
