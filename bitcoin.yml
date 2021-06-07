@@ -1,0 +1,23 @@
+---
+version: "3.8"
+services:
+  bitcoin:
+    image: paulius6/bitcoin:0.20.0
+    networks:
+      - default
+    volumes:
+      - ./data/bitcoin:/home/bitcoin/.bitcoin
+    ports:
+      - "18332:8332"
+    command: >-
+      bitcoind
+        -printtoconsole
+        -rpcuser=${BITCOIN_RPC_USER:-username}
+        -rpcpassword=${BITCOIN_RPC_PASSWORD:-password}
+        -rpcallowip=10.6.6.0/24
+        -rpcbind=0.0.0.0
+        -rpcport=8332
+        -server=1
+        -txindex=1
+        -prune=0
+        -regtest=1

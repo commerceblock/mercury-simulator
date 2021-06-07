@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  mercury:
+    image: commerceblock/mercury:latest
+    environment:
+      - MERC_DB_USER_W=postgres
+      - MERC_DB_PASS_W=password
+      - MERC_DB_HOST_W=sim_mercurydb
+      - MERC_DB_PORT_W=5432
+      - MERC_DB_DATABASE_W=postgres
+      - MERC_DB_USER_R=postgres
+      - MERC_DB_PASS_R=password
+      - MERC_DB_HOST_R=sim_mercurydb
+      - MERC_DB_PORT_R=5432
+      - MERC_DB_DATABASE_R=postgres
+      - MERC_NETWORK=testnet
+      - MERC_BLOCK_TIME=2
+      - MERC_LOCKBOX=lockbox_1
+      - RUST_LOG=debug
+      - MERC_TESTING_MODE=true
+    networks:
+      - default
+    ports:
+      - "18000:8000"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    command: server

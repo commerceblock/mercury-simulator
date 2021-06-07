@@ -16,7 +16,7 @@ services:
     ports:
       - "15432:5432"
 
-  lockbox:
+  lockbox_0:
     image: commerceblock/lockbox:tests
     networks:
       - default
@@ -31,6 +31,31 @@ services:
       SGX_SDK: /opt/intel/sgxsdk
       LD_LIBRARY_PATH: /opt/intel/sgxsdk/sdk_libs
       LOCKBOX_DB_PATH: /tmp/lockbox
+      LOCKBOX_ENC_INDEX: 0
+      LOCKBOX_CLIENT_URL_SRC: lockbox_0 
+      LOCKBOX_CLIENT_URL_DEST: lockbox_1
+    command: >
+      bash -c "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/intel/sgx-aesm-service/aesm/ /opt/intel/sgx-aesm-service/aesm/aesm_service;
+                /opt/lockbox/bin/server_exec"
+
+  lockbox_1:
+    image: commerceblock/lockbox:tests
+    networks:
+      - default
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "19001:8000"
+    environment:
+      SGX_MODE: SW
+      SGX_SDK: /opt/intel/sgxsdk
+      LD_LIBRARY_PATH: /opt/intel/sgxsdk/sdk_libs
+      LOCKBOX_DB_PATH: /tmp/lockbox
+      LOCKBOX_ENC_INDEX: 1
+      LOCKBOX_CLIENT_URL_SRC: lockbox_0 
+      LOCKBOX_CLIENT_URL_DEST: lockbox_1
     command: >
       bash -c "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/intel/sgx-aesm-service/aesm/ /opt/intel/sgx-aesm-service/aesm/aesm_service;
                 /opt/lockbox/bin/server_exec"
@@ -50,6 +75,7 @@ services:
       - MERC_DB_DATABASE_R=postgres
       - MERC_NETWORK=testnet
       - MERC_BLOCK_TIME=2
+      - MERC_LOCKBOX=lockbox_0
       - RUST_LOG=debug
     networks:
       - default
@@ -85,6 +111,7 @@ services:
         -txindex=1
         -prune=0
         -regtest=1
+
 
 networks:
   default:

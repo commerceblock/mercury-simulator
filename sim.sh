@@ -6,7 +6,7 @@ if [ -z "$1" ]; then
       echo "update - update docker images"
       echo "start - start stack to create or update services"
       echo "stop - stop stack and services, requires init again"
-      echo "stopService - remove idividual service"
+      echo "stopService - remove individual service"
       echo "stackStatus - check status of the stack"
       echo "stackPs - check process list of the stack"
       echo "status - check status of running containers"
@@ -35,14 +35,21 @@ function updateDockerImages(){
 }
 
 function startStack(){
+    if [ -z "$2" ]; then
+	stackfile=stack.yml
+    else
+	stackfile=$2
+    fi
+    
     echo "Starting/updating stack"
-    docker stack deploy -c stack.yml sim
+    docker stack deploy -c $stackfile sim
 }
 
 function stackRemove(){
     echo "Removing stack"
     docker stack rm sim
-    sudo rm -rf data/{bitcoin,mercurydb}
+    rm -rf data/{bitcoin,mercurydb}
+    mkdir data/{bitcoin,mercurydb}
 }
 
 function removeService(){
@@ -54,6 +61,17 @@ function removeService(){
     service=$2
     echo "Removing service: sim_${service}"
     docker service rm sim_${service}
+}
+
+function createService(){
+    if [ -z "$2" ]; then
+          echo "Please provide service name, e.g: mercury, bitcoin"
+          exit 0
+    fi
+
+    service=$2
+    echo "Creatting service: sim_${service}"
+    docker compose -f stack.yml up ${service}
 }
 
 function stackStatus(){
@@ -86,9 +104,14 @@ function mercuryStatus(){
 }
 
 function lockboxStatus(){
-    echo "Pinging lockbox API"
+    if [ -z "$2" ]; then
+	lb_index=0
+    else
+	lb_index=1
+    fi
+    echo "Pinging lockbox API ${lb_index}"
     echo "---"
-    curl -v4 http://0.0.0.0:19000/ping
+    curl -v4 http://0.0.0.0:1900${lb_index}/ping
     echo ""
     echo "You should see: |HTTP/1.1 200 OK| in the above response"
 }
@@ -98,7 +121,7 @@ case "$1" in
             initialize
             ;;
         start)
-            startStack
+            startStack $1 $2
             ;;
         update)
             updateDockerImages
@@ -106,7 +129,7 @@ case "$1" in
         stop)
             stackRemove
             ;;
-        stopService)
+	stopService)
             removeService $1 $2
             ;;
         stackStatus)
@@ -122,7 +145,7 @@ case "$1" in
             mercuryStatus
             ;;
         pingLockbox)
-            lockboxStatus
+            lockboxStatus $1 $2
             ;;
         *)
             "$@"
