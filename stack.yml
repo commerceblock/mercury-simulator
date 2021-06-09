@@ -73,9 +73,10 @@ services:
       - MERC_DB_HOST_R=sim_mercurydb
       - MERC_DB_PORT_R=5432
       - MERC_DB_DATABASE_R=postgres
-      - MERC_NETWORK=testnet
+      - MERC_NETWORK=regtest
       - MERC_BLOCK_TIME=2
       - MERC_LOCKBOX=lockbox_0
+      - MERC_ELECTRUM_SERVER=electrumx_test:50004
       - RUST_LOG=debug
     networks:
       - default
@@ -86,7 +87,7 @@ services:
       restart_policy:
         condition: on-failure
     command: server
-
+      
   bitcoin:
     image: paulius6/bitcoin:0.20.0
     networks:
@@ -104,7 +105,7 @@ services:
         -printtoconsole
         -rpcuser=${BITCOIN_RPC_USER:-username}
         -rpcpassword=${BITCOIN_RPC_PASSWORD:-password}
-        -rpcallowip=10.6.6.0/24
+        -rpcallowip=0.0.0.0/0
         -rpcbind=0.0.0.0
         -rpcport=8332
         -server=1
@@ -112,6 +113,35 @@ services:
         -prune=0
         -regtest=1
 
+  electrumx_test:
+    image: paulius6/electrumx
+    environment:
+      DB_DIRECTORY: /electrum-db
+      DAEMON_URL: http://username:password@bitcoin:8332/
+      SERVICES: ssl://:50002,wss://:50004
+      SSL_KEYFILE: /etc/ssl/certs/electrumx_privkey.pem
+      SSL_CERTFILE: /etc/ssl/certs/electrumx_full.pem
+      COIN: BitcoinSegwit
+      NET: regtest
+      MAX_SEND: 30000000
+    ulimits:
+      nofile:
+        soft: 2500
+        hard: 2500
+    volumes:
+      - /data/electrumx-test:/electrum-db
+    networks:
+      - default
+    ports:
+      - "50002:50002"
+      - "50004:50004"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.labels.env2 == electrumx]
+    command: electrumx_server
 
 networks:
   default:

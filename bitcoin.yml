@@ -14,7 +14,7 @@ services:
         -printtoconsole
         -rpcuser=${BITCOIN_RPC_USER:-username}
         -rpcpassword=${BITCOIN_RPC_PASSWORD:-password}
-        -rpcallowip=10.6.6.0/24
+        -rpcallowip=0.0.0.0/0
         -rpcbind=0.0.0.0
         -rpcport=8332
         -server=1

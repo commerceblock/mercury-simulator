@@ -22,9 +22,21 @@ else:
 # rpc_user and rpc_password are set in the bitcoin.conf file
 uri=("http://%s:%s@0.0.0.0:18332"%(rpc_user, rpc_password))
 print(uri)
-rpc_connection = AuthServiceProxy(uri, timeout=600)
-address=rpc_connection.getnewaddress()
+rpc_con = AuthServiceProxy(uri, timeout=600)
+address=rpc_con.getnewaddress()
+print("Generate address:")
 print(address)
+print("Generate blocks")
+print(rpc_con.generatetoaddress(1,address))
+print("Get balance")
+print(rpc_con.getaddressinfo(address))
+print(rpc_con.getbalances())
+print(rpc_con.getwalletinfo())
+
+os.system(docker exec -it mercury_client wallet_cli -help)
+
+
+
 #net_info=rpc_connection.getnetworkinfo()
 #print(net_info)
 #best_block_hash = rpc_connection.getbestblockhash()
