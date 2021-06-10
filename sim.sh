@@ -12,6 +12,7 @@ if [ -z "$1" ]; then
       echo "status - check status of running containers"
       echo "ping - ping mercury server API"
       echo "pingLockbox - ping lockbox server API"
+      echo "pingElectrumx - check electrumx port"
 fi
 
 function initialize(){
