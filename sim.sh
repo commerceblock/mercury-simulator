@@ -18,12 +18,13 @@ function initialize(){
     echo "Creating swarm"
     docker swarm init
     echo "Creating required dirs"
-    mkdir -p data/{bitcoin,mercurydb}
+    mkdir -p data/{bitcoin,mercurydb,electrumx-test}
     echo "Downloading required docker images"
     docker pull timescale/timescaledb:latest-pg12
     docker pull commerceblock/mercury:latest
     docker pull paulius6/bitcoin:0.20.0
     docker pull commerceblock/lockbox:tests
+    docker pull paulius6/electrumx
 }
 
 function updateDockerImages(){
@@ -42,7 +43,7 @@ function startStack(){
 function stackRemove(){
     echo "Removing stack"
     docker stack rm sim
-    sudo rm -rf data/{bitcoin,mercurydb}
+    sudo rm -rf data/{bitcoin,mercurydb,electrumx-test}
 }
 
 function removeService(){
@@ -93,6 +94,14 @@ function lockboxStatus(){
     echo "You should see: |HTTP/1.1 200 OK| in the above response"
 }
 
+function electrumxStatus(){
+    echo "Checking electrumx TCP port"
+    echo "---"
+    nc -vz 0.0.0.0 50001
+    echo ""
+    echo "You should see: Connection to 0.0.0.0 50001 port [tcp/*] succeeded!"
+}
+
 case "$1" in
         init)
             initialize
@@ -123,6 +132,9 @@ case "$1" in
             ;;
         pingLockbox)
             lockboxStatus
+            ;;
+        pingElectrumx)
+            electrumxStatus
             ;;
         *)
             "$@"
