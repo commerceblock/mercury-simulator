@@ -16,8 +16,8 @@ services:
     ports:
       - "15432:5432"
 
-  lockbox:
-    image: commerceblock/lockbox:tests
+  lockbox_0:
+    image: lockbox:test_replica
     networks:
       - default
     deploy:
@@ -31,10 +31,16 @@ services:
       SGX_SDK: /opt/intel/sgxsdk
       LD_LIBRARY_PATH: /opt/intel/sgxsdk/sdk_libs
       LOCKBOX_DB_PATH: /tmp/lockbox
+      LOCKBOX_ENC_INDEX: 0
+      LOCKBOX_CLIENT_URL_SRC: lockbox_0 
+      LOCKBOX_CLIENT_URL_DEST: lockbox_1
+    volumes:
+      - ./data/lockbox_0:/tmp/lockbox
     command: >
       bash -c "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/intel/sgx-aesm-service/aesm/ /opt/intel/sgx-aesm-service/aesm/aesm_service;
                 /opt/lockbox/bin/server_exec"
 
+  
   mercury:
     image: commerceblock/mercury:latest
     environment:
@@ -48,9 +54,12 @@ services:
       - MERC_DB_HOST_R=sim_mercurydb
       - MERC_DB_PORT_R=5432
       - MERC_DB_DATABASE_R=postgres
-      - MERC_NETWORK=testnet
+      - MERC_NETWORK=regtest
       - MERC_BLOCK_TIME=2
+      - MERC_LOCKBOX=lockbox_0
+      - MERC_ELECTRUM_SERVER=tcp://electrumx_test:50001
       - RUST_LOG=debug
+      - MERC_FEE_DEPOSIT=0
     networks:
       - default
     ports:
@@ -60,7 +69,7 @@ services:
       restart_policy:
         condition: on-failure
     command: server
-
+      
   bitcoin:
     image: paulius6/bitcoin:0.20.0
     networks:
@@ -78,13 +87,15 @@ services:
         -printtoconsole
         -rpcuser=${BITCOIN_RPC_USER:-username}
         -rpcpassword=${BITCOIN_RPC_PASSWORD:-password}
-        -rpcallowip=10.6.6.0/24
+        -rpcallowip=0.0.0.0/0
         -rpcbind=0.0.0.0
         -rpcport=8332
         -server=1
         -txindex=1
         -prune=0
         -regtest=1
+        -fallbackfee=1
+        -maxtxfee=1
 
   electrumx_test:
     image: paulius6/electrumx
