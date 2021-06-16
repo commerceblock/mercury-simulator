@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  mercury_0:
+    image: commerceblock/mercury:latest
+    environment:
+      - MERC_DB_USER_W=postgres
+      - MERC_DB_PASS_W=password
+      - MERC_DB_HOST_W=sim_mercurydb
+      - MERC_DB_PORT_W=5432
+      - MERC_DB_DATABASE_W=postgres
+      - MERC_DB_USER_R=postgres
+      - MERC_DB_PASS_R=password
+      - MERC_DB_HOST_R=sim_mercurydb
+      - MERC_DB_PORT_R=5432
+      - MERC_DB_DATABASE_R=postgres
+      - MERC_NETWORK=regtest
+      - MERC_BLOCK_TIME=2
+      - MERC_LOCKBOX=http://lockbox_0:8000
+      - RUST_LOG=debug
+      - MERC_TESTING_MODE=false
+      - MERC_REQUIRED_CONFIRMATION=0
+      - MERC_PUNISHMENT_DURATION=3600
+      - MERC_UTXO_TIMEOUT=60
+      - MERC_BATCH_LIFETIME=3600
+      - MERC_LOCKHEIGHT_INIT=10000
+      - MERC_LH_DECREMENT=100
+      - MERC_FEE_ADDRESS=bcrt1qy6jn9a2lgaumeedqxzq2s0497s5zr5645xmzuk
+      - MERC_FEE_DEPOSIT=0
+      - MERC_FEE_WITHDRAW=300
+#      - MERC_MAINSTAY_CONFIG=""
+      - MERC_WATCH_ONLY=false
+#      - MERC_BITCOIND=""
+    networks:
+      - default
+    ports:
+      - "18000:8000"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    command: server

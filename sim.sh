@@ -3,6 +3,7 @@
 if [ -z "$1" ]; then
       echo "Please use one of the following:"
       echo "init - initialize stack, create required dirs"
+      echo "initDirs - create required dirs"
       echo "update - update docker images"
       echo "start - start stack to create or update services"
       echo "stop - stop stack and services, requires init again"
@@ -15,16 +16,20 @@ if [ -z "$1" ]; then
       echo "pingElectrumx - check electrumx port"
 fi
 
+function initDirs(){
+    mkdir -p data/{bitcoin,mercurydb,electrumx-test,lockbox_0,lockbox_1,lockbox_key_0,lockbox_key_1}
+}
+
 function initialize(){
     echo "Creating swarm"
     docker swarm init
     echo "Creating required dirs"
-    mkdir -p data/{bitcoin,mercurydb,electrumx-test,lockbox_0,lockbox_1}
+    mkdir -p data/{bitcoin,mercurydb,electrumx-test,lockbox_0,lockbox_1,lockbox_key_0,lockbox_key_1}
     echo "Downloading required docker images"
     docker pull timescale/timescaledb:latest-pg12
     docker pull commerceblock/mercury:latest
     docker pull paulius6/bitcoin:0.20.0
-    docker pull lockbox:test_replica
+    docker pull lockbox:test_replica_3
     docker pull paulius6/electrumx
 }
 
@@ -33,7 +38,7 @@ function updateDockerImages(){
     docker pull timescale/timescaledb:latest-pg12
     docker pull commerceblock/mercury:latest
     docker pull paulius6/bitcoin:0.20.0
-    docker pull lockbox:test_replica
+    docker pull lockbox:test_replica_3
     docker pull paulius6/electrumx
 }
 
@@ -51,7 +56,7 @@ function startStack(){
 function stackRemove(){
     echo "Removing stack"
     docker stack rm sim
-    sudo rm -rf data/{bitcoin,mercurydb,electrumx-test,lockbox_0,lockbox_1}
+    sudo rm -rf data/{bitcoin,mercurydb,electrumx-test,lockbox_0,lockbox_1,lockbox_key_0,lockbox_key_1}
 }
 
 function removeService(){
@@ -130,6 +135,9 @@ case "$1" in
         init)
             initialize
             ;;
+        initDirs)
+            initDirs
+            ;;
         start)
             startStack $1 $2
             ;;
@@ -139,7 +147,7 @@ case "$1" in
         stop)
             stackRemove
             ;;
-	stopService)
+	    stopService)
             removeService $1 $2
             ;;
         stackStatus)
