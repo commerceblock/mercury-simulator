@@ -29,7 +29,7 @@ function initialize(){
     docker pull timescale/timescaledb:latest-pg12
     docker pull commerceblock/mercury:latest
     docker pull paulius6/bitcoin:0.20.0
-    docker pull lockbox:test_replica_3
+    docker pull lockbox:test_replica_4
     docker pull paulius6/electrumx
 }
 
@@ -38,7 +38,7 @@ function updateDockerImages(){
     docker pull timescale/timescaledb:latest-pg12
     docker pull commerceblock/mercury:latest
     docker pull paulius6/bitcoin:0.20.0
-    docker pull lockbox:test_replica_3
+    docker pull lockbox:test_replica_4
     docker pull paulius6/electrumx
 }
 
