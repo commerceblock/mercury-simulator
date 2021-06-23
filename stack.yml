@@ -19,7 +19,7 @@ services:
 
 
   lockbox_1:
-    image: commerceblock/lockbox:replica
+    image: lockbox:test_replica_5
     networks:
       - default
     deploy:
@@ -45,7 +45,7 @@ services:
                 /opt/lockbox/bin/server_exec"
 
   lockbox_0:
-    image: commerceblock/lockbox:replica
+    image: lockbox:test_replica_5
     networks:
       - default
     deploy:
@@ -71,7 +71,7 @@ services:
                 /opt/lockbox/bin/server_exec"
 
   lockbox_init_shared:
-    image: commerceblock/lockbox:replica
+    image: lockbox:test_replica_5
     depends_on:
       - lockbox_0
       - lockbox_1
@@ -88,10 +88,10 @@ services:
       SGX_SDK: /opt/intel/sgxsdk
       LD_LIBRARY_PATH: /opt/intel/sgxsdk/sdk_libs
       LOCKBOX_ENC_INDEX: 0
-      LOCKBOX_URL_SRC: http://lockbox_0:8000
+      LOCKBOX_URL_SRC: http://lockbox_1:8000
       LOCKBOX_URL_DST: http://lockbox_1:8000
     command: >
-      bash -c "/opt/lockbox/bin/init_shared_exec"
+      bash -c "sleep 20 && /opt/lockbox/bin/init_shared_exec"
   
   mercury:
     image: commerceblock/mercury:latest

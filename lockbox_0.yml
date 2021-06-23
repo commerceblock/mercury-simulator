@@ -2,7 +2,7 @@
 version: "3.8"
 services:
   lockbox_0:
-    image: commerceblock/lockbox:replica
+    image: lockbox:test_replica_5
     networks:
       - default
     deploy:
