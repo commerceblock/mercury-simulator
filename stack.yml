@@ -19,7 +19,7 @@ services:
 
 
   lockbox_1:
-    image: lockbox:test_replica_5
+    image: commerceblock/lockbox:tests
     networks:
       - default
     deploy:
@@ -45,7 +45,7 @@ services:
                 /opt/lockbox/bin/server_exec"
 
   lockbox_0:
-    image: lockbox:test_replica_5
+    image: commerceblock/lockbox:tests
     networks:
       - default
     deploy:
@@ -71,7 +71,7 @@ services:
                 /opt/lockbox/bin/server_exec"
 
   lockbox_init_shared:
-    image: lockbox:test_replica_5
+    image: commerceblock/lockbox:tests
     depends_on:
       - lockbox_0
       - lockbox_1
