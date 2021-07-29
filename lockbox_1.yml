@@ -2,7 +2,7 @@
 version: "3.8"
 services:
   lockbox_1:
-    image: commerceblock/lockbox:tests
+    image: lockbox:test_local
     networks:
       - default
     deploy:

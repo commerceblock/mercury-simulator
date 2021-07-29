@@ -17,19 +17,19 @@ if [ -z "$1" ]; then
 fi
 
 function initDirs(){
-    mkdir -p data/{bitcoin,mercurydb,electrumx-test,lockbox_0,lockbox_1,lockbox_key_0,lockbox_key_1}
+    mkdir -p data/{bitcoin,mercurydb,electrumx-test,lockbox_0,lockbox_1,lockbox_key_0,lockbox_key_1,hub_key}
 }
 
 function initialize(){
     echo "Creating swarm"
     docker swarm init
     echo "Creating required dirs"
-    mkdir -p data/{bitcoin,mercurydb,electrumx-test,lockbox_0,lockbox_1,lockbox_key_0,lockbox_key_1}
+    mkdir -p data/{bitcoin,mercurydb,electrumx-test,lockbox_0,lockbox_1,lockbox_key_0,lockbox_key_1,hub_key}
     echo "Downloading required docker images"
     docker pull timescale/timescaledb:latest-pg12
     docker pull commerceblock/mercury:latest
     docker pull paulius6/bitcoin:0.20.0
-    docker pull commerceblock/lockbox:tests
+    docker pull commerceblock/lockbox:latest
     docker pull paulius6/electrumx
 }
 
@@ -38,7 +38,7 @@ function updateDockerImages(){
     docker pull timescale/timescaledb:latest-pg12
     docker pull commerceblock/mercury:latest
     docker pull paulius6/bitcoin:0.20.0
-    docker pull commerceblock/lockbox:tests
+    docker pull commerceblock/lockbox:latest
     docker pull paulius6/electrumx
 }
 
@@ -56,7 +56,7 @@ function startStack(){
 function stackRemove(){
     echo "Removing stack"
     docker stack rm sim
-    sudo rm -rf data/{bitcoin,mercurydb,electrumx-test,lockbox_0,lockbox_1,lockbox_key_0,lockbox_key_1}
+    sudo rm -rf data/{bitcoin,mercurydb,electrumx-test,lockbox_0,lockbox_1,lockbox_key_0,lockbox_key_1,hub_key}
 }
 
 function removeService(){
