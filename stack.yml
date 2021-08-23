@@ -37,6 +37,7 @@ services:
       LOCKBOX_ENC_INDEX: 1
       LOCKBOX_URL_SRC: http://lockbox_0:8000
       LOCKBOX_URL_DST: http://lockbox_1:8000
+      RUST_LOG: info
     volumes:
       - ./data/lockbox_1:/tmp/lockbox
       - ./data/lockbox_key_1:/tmp/lockbox_key
@@ -63,6 +64,7 @@ services:
       LOCKBOX_ENC_INDEX: 0
       LOCKBOX_URL_SRC: http://lockbox_0:8000
       LOCKBOX_URL_DST: http://lockbox_1:8000
+      RUST_LOG: info
     volumes:
       - ./data/lockbox_0:/tmp/lockbox
       - ./data/lockbox_key_0:/tmp/lockbox_key
@@ -89,12 +91,14 @@ services:
       LD_LIBRARY_PATH: /opt/intel/sgxsdk/sdk_libs
       HUB_KEY_DB_PATH: /tmp/hub_key
       HUB_ENC_INDEX: 0
+      RUST_LOG: info
       HUB_LOCKBOX_URLS: http://lockbox_0:8000,http://lockbox_1:8000
     volumes:
       - ./data/hub_key:/tmp/hub_key
     command: >
-      bash -c "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/intel/sgx-aesm-service/aesm/ /opt/intel/sgx-aesm-service/aesm/aesm_service;
-                /opt/lockbox_hub/bin/hub_exec"
+      bash -c "sleep 60;
+              LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/intel/sgx-aesm-service/aesm/ /opt/intel/sgx-aesm-service/aesm/aesm_service;
+              /opt/lockbox_hub/bin/hub_exec"
 
 #  lockbox_init_shared:
 #    image: commerceblock/lockbox:tests
@@ -121,6 +125,9 @@ services:
   
   mercury:
     image: commerceblock/mercury:latest
+    depends_on:
+      - mercury_db
+      - lockbox_0
     environment:
       - MERC_DB_USER_W=postgres
       - MERC_DB_PASS_W=password
@@ -150,6 +157,7 @@ services:
 #      - MERC_MAINSTAY_CONFIG=""
       - MERC_WATCH_ONLY=false
 #      - MERC_BITCOIND=""
+      - RUST_LOG=info
     networks:
       - default
     ports:

@@ -2,6 +2,9 @@ version: "3.8"
 services:
   mercury_1:
     image: commerceblock/mercury:latest
+    depends_on:
+      - mercury_db
+      - lockbox_1
     environment:
       - MERC_DB_USER_W=postgres
       - MERC_DB_PASS_W=password
@@ -21,7 +24,7 @@ services:
       - MERC_REQUIRED_CONFIRMATION=0
       - MERC_PUNISHMENT_DURATION=3600
       - MERC_UTXO_TIMEOUT=60
-      - MERC_GROUP_TIMEOUT=1
+      - MERC_GROUP_TIMEOUT=120
       - MERC_BATCH_LIFETIME=3600
       - MERC_LOCKHEIGHT_INIT=10000
       - MERC_LH_DECREMENT=100
@@ -31,6 +34,7 @@ services:
 #      - MERC_MAINSTAY_CONFIG=""
       - MERC_WATCH_ONLY=false
 #      - MERC_BITCOIND=""
+      - RUST_LOG=info
     networks:
       - default
     ports:

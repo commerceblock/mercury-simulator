@@ -2,6 +2,9 @@ version: "3.8"
 services:
   mercury_0:
     image: commerceblock/mercury:latest
+     depends_on:
+      - mercury_db
+      - lockbox_0
     environment:
       - MERC_DB_USER_W=postgres
       - MERC_DB_PASS_W=password
@@ -31,6 +34,7 @@ services:
 #      - MERC_MAINSTAY_CONFIG=""
       - MERC_WATCH_ONLY=false
 #      - MERC_BITCOIND=""
+      - RUST_LOG=info
     networks:
       - default
     ports:

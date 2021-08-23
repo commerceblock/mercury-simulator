@@ -20,6 +20,7 @@ services:
       LOCKBOX_ENC_INDEX: 1
       LOCKBOX_URL_SRC: http://lockbox_0:8000
       LOCKBOX_URL_DST: http://lockbox_1:8000
+      RUST_LOG: info
     volumes:
       - ./data/lockbox_1:/tmp/lockbox
       - ./data/lockbox_key_1:/tmp/lockbox_key

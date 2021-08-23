@@ -21,16 +21,10 @@ function initDirs(){
 }
 
 function initialize(){
-    echo "Creating swarm"
-    docker swarm init
+    echo "Creating swarm" 
+    docker swarm init 
     echo "Creating required dirs"
-    mkdir -p data/{bitcoin,mercurydb,electrumx-test,lockbox_0,lockbox_1,lockbox_key_0,lockbox_key_1,hub_key}
-    echo "Downloading required docker images"
-    docker pull timescale/timescaledb:latest-pg12
-    docker pull commerceblock/mercury:latest
-    docker pull paulius6/bitcoin:0.20.0
-    docker pull commerceblock/lockbox:latest
-    docker pull paulius6/electrumx
+    initDirs
 }
 
 function updateDockerImages(){
